@@ -26,7 +26,7 @@ public class VendaDAO extends DAOGenerico<Venda> implements IVendaRepositorio {
         return instancia;
     }
 
-    private VendaDAO() {
+    public VendaDAO() {
         super(Venda.class);
     }
 

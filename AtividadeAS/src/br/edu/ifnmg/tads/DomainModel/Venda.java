@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package br.edu.ifnmg.tads.DomainModel;
 
 import java.io.Serializable;
@@ -15,10 +14,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.Table;
 import javax.persistence.Temporal;
 
 /**
@@ -26,25 +23,40 @@ import javax.persistence.Temporal;
  * @author ALUNO-2014-01
  */
 @Entity
-@Table(name = "DiegoViado")
 public class Venda implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "VendaID")
     private Long id;
-    
+
     @ManyToOne(optional = false)
     private Cliente cliente;
-    
+
     private double ValorTotal;
-    
+
     @Temporal(javax.persistence.TemporalType.DATE)
     private Date dataVenda;
-   
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "venda")
     private List<ItemVenda> itens;
-    
+
+    public Venda(Long id, Cliente cliente, double ValorTotal, Date dataVenda, List<ItemVenda> itens) {
+        this.id = id;
+        this.cliente = cliente;
+        this.ValorTotal = ValorTotal;
+        this.dataVenda = dataVenda;
+        this.itens = itens;
+    }
+
+    public Venda() {
+        cliente = new Cliente();
+        ValorTotal = 0;
+        dataVenda = null;
+        itens = null;
+    }
+
     public Long getId() {
         return id;
     }
@@ -84,15 +96,23 @@ public class Venda implements Serializable {
     public void setDataVenda(Date dataVenda) {
         this.dataVenda = dataVenda;
     }
-        
-    public void add(ItemVenda i){
-        if(!itens.contains(i)){
+
+    public void add(ItemVenda i) {
+        if (!itens.contains(i)) {
             i.setVenda(this);
             itens.add(i);
-           // ValorTotal = ValorTotal.add(i.getProduto().getValor().mutiply(new Double(i.getQuantidade())));
+            ValorTotal += (i.getProduto().getValor() * i.getQuantidade());
         }
     }
-    
+
+    public void remove(ItemVenda i) {
+        if (itens.contains(i)) {
+            i.setVenda(this);
+            itens.remove(i);
+            ValorTotal -= (i.getProduto().getValor() * i.getQuantidade());
+        }
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -117,5 +137,5 @@ public class Venda implements Serializable {
     public String toString() {
         return "br.edu.ifnmg.tads.DomainModel.Venda[ id=" + id + " ]";
     }
-    
+
 }
